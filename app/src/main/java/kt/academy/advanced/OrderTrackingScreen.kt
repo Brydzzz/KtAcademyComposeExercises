@@ -1,5 +1,3 @@
-@file:Suppress("COMPOSE_APPLIER_CALL_MISMATCH")
-
 package kt.academy.advanced
 
 import androidx.compose.animation.core.LinearEasing
@@ -9,6 +7,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,11 +18,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
@@ -34,12 +38,12 @@ import kt.academy.util.TruckIcon
 
 @Composable
 fun OrderTrackingScreen(tracker: OrderTracker, modifier: Modifier = Modifier) {
-    RecompositionCounterEffect("OrderTrackingScreen")
     BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        RecompositionCounterEffect("OrderTrackingScreen")
         val transition = rememberInfiniteTransition()
         val truckOffset by transition.animateFloat(
             initialValue = 0f,
@@ -69,9 +73,14 @@ fun OrderTrackingScreen(tracker: OrderTracker, modifier: Modifier = Modifier) {
                     .size(48.dp)
                     .offset(x = truckOffset.dp)
             )
+            Text(
+                text = status,
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
     }
 }
+// Hide
 
 interface OrderTracker {
     fun getDetailedStatus(): String
@@ -105,7 +114,7 @@ class FakeOrderTracker  : OrderTracker {
         MutableStateFlow("Package is on its way to the distribution center")
 
     val itemsToSortToSimulateHeavyOperation by lazy {
-        List(10_000_000) { "Item$it".hashCode().toString() }
+        List(1_000_000) { "Item$it".hashCode().toString() }
     }
 
     override fun getDetailedStatus(): String {
